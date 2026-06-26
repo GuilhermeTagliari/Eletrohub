@@ -155,6 +155,7 @@ Requisição → Gateway (8765)
   ├── /auth/**      → auth-service (público)
   ├── /products/**  → product-service (público)
   ├── /currency/**  → currency-service (público)
+  ├── /greeting/**  → greeting-service (público)
   └── /ws/**        → [valida JWT] → serviço destino
 ```
 
@@ -412,6 +413,77 @@ curl -X POST http://localhost:8200/orders \
     "valorAbatimentoTradeIn": 4350.00,
     "metodoPagamento": "pix"
   }'
+```
+
+---
+
+#### greeting-service (porta 8080) — Microsserviço de Saudação
+
+Microsserviço de demonstração da arquitetura Spring Cloud. Stateless (sem banco de dados), registrado no Eureka e configurado via config-service. A mensagem de saudação e o nome padrão são externalizados em `application.properties` e sobrescritíveis por perfil ou Config Server.
+
+**GET /greeting** — Retorna mensagem de saudação configurável
+
+```bash
+# Sem parâmetro — usa nome padrão "Mundo"
+curl -X GET http://localhost:8080/greeting
+
+# Com nome customizado
+curl -X GET "http://localhost:8080/greeting?name=EletroHub"
+```
+
+Resposta:
+```
+Ola EletroHub!!!
+```
+
+**GET /actuator/health** — Health check do serviço
+
+```bash
+curl -X GET http://localhost:8080/actuator/health
+```
+
+Resposta:
+```json
+{ "status": "UP" }
+```
+
+---
+
+#### config-service (porta 8888) — Servidor de Configuração Centralizada
+
+Implementa o **Spring Cloud Config Server** com perfil `native` (configurações armazenadas no classpath em `resources/configs/{application}`). Todos os microserviços importam suas configurações deste serviço na inicialização via `spring.config.import=optional:configserver:http://localhost:8888/`.
+
+**GET /{application}/{profile}** — Retorna a configuração de um microserviço
+
+```bash
+# Configuração do greeting-service no perfil padrão
+curl -X GET http://localhost:8888/greeting-service/default
+
+# Configuração com perfil específico (ex: fr)
+curl -X GET http://localhost:8888/greeting-service/fr
+```
+
+Resposta:
+```json
+{
+  "name": "greeting-service",
+  "profiles": ["default"],
+  "propertySources": [
+    {
+      "name": "classpath:/configs/greeting-service/application.properties",
+      "source": {
+        "greeting-service.greeting": "Ola",
+        "greeting-service.default-name": "Mundo"
+      }
+    }
+  ]
+}
+```
+
+**GET /actuator/health** — Health check
+
+```bash
+curl -X GET http://localhost:8888/actuator/health
 ```
 
 ---
