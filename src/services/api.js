@@ -1,36 +1,80 @@
 import { AUTH_BASE_URL, PRODUCT_BASE_URL, PRODUCT_IDS } from '../config';
 
-const PRODUCT_IMAGE_MAP = {
-  'iPhone 15 128GB':
-    'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-finish-select-202309-6-1inch-pink?wid=1144&hei=1144&fmt=jpeg&qlt=90',
-  'iPhone 15 Pro 256GB':
-    'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-naturaltitanium?wid=1144&hei=1144&fmt=jpeg&qlt=90',
-  'Galaxy S24 256GB':
-    'https://images.samsung.com/is/image/samsung/p6pim/br/2401/gallery/br-galaxy-s24-s921-sm-s921blbbbri-thumb-539573236?$650_519_PNG$',
-  'Galaxy S24 Ultra 512GB':
-    'https://images.samsung.com/is/image/samsung/p6pim/br/2401/gallery/br-galaxy-s24-ultra-s928-sm-s928bzgbbri-thumb-539574124?$650_519_PNG$',
-  'Moto G84 5G 256GB':
-    'https://motorolabr.vtexassets.com/arquivos/ids/158282/Moto_G84_5G_Marshmallow_Blue_PDP_Image.png',
-  'Moto Edge 40 256GB':
-    'https://motorolabr.vtexassets.com/arquivos/ids/157484/moto_edge_40_black.png',
-  'Redmi Note 13 Pro 256GB':
-    'https://i01.appmifile.com/webfile/globalimg/products/pc/redmi-note-13-pro/section2.png',
-  'Redmi 13C 128GB':
-    'https://i02.appmifile.com/webfile/globalimg/products/pc/redmi-13c/section2.png',
-  'Pixel 8 128GB':
-    'https://lh3.googleusercontent.com/Rk6LSFK43hF62TGHLqPQg3mlHJPNbzXA3IVIJcaE5EFf8zw3EEdWMFkSDFLPlIqVoW0b3vSNVzM',
-  'Pixel 8 Pro 256GB':
-    'https://lh3.googleusercontent.com/o2MK_kHC3sK4MywFQqQIZ0VzLPBllzv6HE8c7vA_Cv4OxkzD5Hm9xyOW3k7cLrV_pC8_5oMJp4',
-  'OnePlus 12 512GB':
-    'https://oasis.opstatics.com/content/dam/oasis/page/2023/in/oneplus-12/specs-img/oneplus-12-img.png',
-  'Galaxy A55 5G 128GB':
-    'https://images.samsung.com/is/image/samsung/p6pim/br/2404/gallery/br-galaxy-a55-5g-sm-a556-thumb-542096820?$650_519_PNG$',
+export const PRODUCT_IMAGE_MAP = {
+  // Smartphones — Apple (GSMArena, funciona)
+  'iPhone 15 128GB':           'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-1.jpg',
+  'iPhone 15 Pro 256GB':       'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-15-pro-1.jpg',
+  // Smartphones — Samsung (Unsplash, GSMArena bloqueia hotlink)
+  'Galaxy S24 256GB':          'https://images.unsplash.com/photo-1581287053822-fd7bf4f4bfec?w=400&h=500&fit=crop&q=80',
+  'Galaxy S24 Ultra 512GB':    'https://images.unsplash.com/photo-1523474438810-b04a2480633c?w=400&h=500&fit=crop&q=80',
+  'Galaxy A55 128GB':          'https://images.unsplash.com/photo-1581287053822-fd7bf4f4bfec?w=400&h=500&fit=crop&q=80',
+  // Smartphones — Motorola (Unsplash)
+  'Moto G84 256GB':            'https://images.unsplash.com/photo-1688281366628-4f63eae64395?w=400&h=500&fit=crop&q=80',
+  'Moto Edge 40 256GB':        'https://images.unsplash.com/photo-1688281366628-4f63eae64395?w=400&h=500&fit=crop&q=80',
+  // Smartphones — outros (GSMArena)
+  'Redmi Note 13 Pro 256GB':   'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-13-pro-4g-1.jpg',
+  'Redmi 13C 128GB':           'https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-13c-1.jpg',
+  'Pixel 8 128GB':             'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-8-1.jpg',
+  'Pixel 8 Pro 256GB':         'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-8-pro-1.jpg',
+  'OnePlus 12 256GB':          'https://fdn2.gsmarena.com/vv/pics/oneplus/oneplus-12-1.jpg',
+  // Geladeiras (Unsplash verificado)
+  'Geladeira Brastemp Frost Free 375L': 'https://images.unsplash.com/photo-1585821570368-53a593a002be?w=400&h=500&fit=crop&q=80',
+  'Geladeira LG Frost Free 478L':       'https://images.unsplash.com/photo-1585338667391-5b279a0c5eb8?w=400&h=500&fit=crop&q=80',
+  // Fogões (Unsplash verificado)
+  'Fogão Consul 5 Bocas':       'https://images.unsplash.com/photo-1608454781855-613047b52c94?w=400&h=500&fit=crop&q=80',
+  'Fogão Electrolux 5 Bocas':   'https://images.unsplash.com/photo-1629157319203-df69cdcfdbb9?w=400&h=500&fit=crop&q=80',
+  // Micro-ondas (Unsplash verificado)
+  'Micro-ondas Electrolux 30L': 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=400&h=500&fit=crop&q=80',
+  'Micro-ondas Samsung 32L':    'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=400&h=500&fit=crop&q=80',
+  // Lavadoras (Unsplash verificado)
+  'Lavadora LG 12kg':           'https://images.unsplash.com/photo-1628843226223-989e20810393?w=400&h=500&fit=crop&q=80',
+  'Lavadora Samsung 11kg':      'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=500&fit=crop&q=80',
+  // Televisões (Unsplash verificado)
+  'Smart TV Samsung 55" QLED':  'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=400&h=500&fit=crop&q=80',
+  'Smart TV LG 50" NanoCell':   'https://images.unsplash.com/photo-1646861039459-fd9e3aabf3fb?w=400&h=500&fit=crop&q=80',
+  // Notebooks (Unsplash)
+  'Notebook Dell Inspiron 15':  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=500&fit=crop&q=80',
+  'Notebook Acer Aspire 5':     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=400&h=500&fit=crop&q=80',
+};
+
+const PRODUCT_FRETE_MAP = {
+  // Smartphones — frete grátis
+  'iPhone 15 128GB': 0, 'iPhone 15 Pro 256GB': 0,
+  'Galaxy S24 256GB': 0, 'Galaxy S24 Ultra 512GB': 0, 'Galaxy A55 128GB': 0,
+  'Moto G84 256GB': 0, 'Moto Edge 40 256GB': 0,
+  'Redmi Note 13 Pro 256GB': 0, 'Redmi 13C 128GB': 0,
+  'Pixel 8 128GB': 0, 'Pixel 8 Pro 256GB': 0, 'OnePlus 12 256GB': 0,
+  // Geladeiras
+  'Geladeira Brastemp Frost Free 375L': 89.90,
+  'Geladeira LG Frost Free 478L': 89.90,
+  // Fogões
+  'Fogão Consul 5 Bocas': 79.90,
+  'Fogão Electrolux 5 Bocas': 79.90,
+  // Micro-ondas
+  'Micro-ondas Electrolux 30L': 39.90,
+  'Micro-ondas Samsung 32L': 39.90,
+  // Lavadoras
+  'Lavadora LG 12kg': 69.90,
+  'Lavadora Samsung 11kg': 69.90,
+  // TVs
+  'Smart TV Samsung 55" QLED': 49.90,
+  'Smart TV LG 50" NanoCell': 49.90,
+  // Notebooks — frete grátis
+  'Notebook Dell Inspiron 15': 0,
+  'Notebook Acer Aspire 5': 0,
 };
 
 function enrichProductImages(p) {
   if (!p.fotos?.length && !p.foto) {
     const url = PRODUCT_IMAGE_MAP[p.description];
     if (url) p.fotos = [url];
+  }
+  if (p.frete === undefined || p.frete === null) {
+    const frete = PRODUCT_FRETE_MAP[p.description];
+    if (frete !== undefined) {
+      p.frete = frete;
+      p.freteTipo = 'proprio';
+    }
   }
   return p;
 }

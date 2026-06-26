@@ -2,7 +2,7 @@
 import { formatBRL } from '../utils/formatters';
 import {
   View, Text, TouchableOpacity, StyleSheet, ScrollView,
-  TextInput, Alert, ActivityIndicator,
+  TextInput, Alert, ActivityIndicator, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -135,7 +135,23 @@ export default function PaymentScreen({ route, navigation }) {
         {/* Resumo */}
         <View style={s.card}>
           <Text style={s.sectionTitle}>Resumo do pedido</Text>
-          <View style={s.row}><Text style={s.rowLabel}>Entrega</Text><Text style={s.rowVal}>{entregaTipo === 'frete' ? 'Frete' : 'Retirada local'}</Text></View>
+
+          {/* Itens do carrinho */}
+          {items.map((item, i) => (
+            <View key={i} style={s.payItem}>
+              <View style={s.payThumb}>
+                {item.fotos?.[0]
+                  ? <Image source={{ uri: item.fotos[0] }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                  : <Ionicons name={item.isLocal ? 'storefront-outline' : 'cube-outline'} size={16} color="#fff" />}
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.payItemName} numberOfLines={1}>{item.description || item.nome}</Text>
+                <Text style={s.payItemQty}>{item.quantity}x · {formatBRL(item.convertedPrice ?? item.price ?? 0)}</Text>
+              </View>
+            </View>
+          ))}
+
+          <View style={[s.row, { marginTop: 8 }]}><Text style={s.rowLabel}>Entrega</Text><Text style={s.rowVal}>{entregaTipo === 'frete' ? 'Frete' : 'Retirada local'}</Text></View>
           {entregaTipo === 'frete' && (
             selected ? (
               <TouchableOpacity style={s.addressRow} onPress={() => navigation.navigate('Addresses')}>
@@ -290,6 +306,17 @@ function makeStyles(colors) {
     content: { padding: 16, gap: 14 },
     card: { backgroundColor: colors.surface, borderRadius: 16, padding: 20 },
     sectionTitle: { fontSize: 12, fontWeight: '700', color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 16 },
+    payItem: {
+      flexDirection: 'row', alignItems: 'center', gap: 12,
+      paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border,
+    },
+    payThumb: {
+      width: 44, height: 44, borderRadius: 10,
+      backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center',
+      overflow: 'hidden',
+    },
+    payItemName: { fontSize: 13, fontWeight: '700', color: colors.text },
+    payItemQty: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
     row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
     rowLabel: { fontSize: 14, color: colors.textSecondary },
     rowVal: { fontSize: 14, fontWeight: '600', color: colors.text, flex: 1, textAlign: 'right' },

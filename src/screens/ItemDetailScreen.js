@@ -517,7 +517,7 @@ export default function ItemDetailScreen({ route, navigation }) {
           <Text style={[s.selfItemText, { color: colors.danger }]}>Produto indisponível</Text>
         </View>
       ) : (
-        <View style={[s.actions, { paddingBottom: insets.bottom + 12 }]}>
+        <View style={s.actions}>
           <TouchableOpacity style={s.btnOffer} onPress={() => setShowOferta(true)}>
             <Ionicons name="pricetag-outline" size={16} color={colors.text} />
             <Text style={s.btnOfferText}>Oferta</Text>
@@ -737,7 +737,7 @@ function makeStyles(colors) {
     },
     selfItemText: { fontSize: 14, color: colors.textMuted, fontWeight: '600' },
     actions: {
-      flexDirection: 'row', paddingHorizontal: 16, paddingTop: 14, gap: 8,
+      flexDirection: 'row', paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14, gap: 8,
       borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.surface,
     },
     btnOffer: {

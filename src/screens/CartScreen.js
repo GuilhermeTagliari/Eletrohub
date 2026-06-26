@@ -1,9 +1,10 @@
 ﻿import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { useCart } from '../context/CartContext';
+import { PRODUCT_IMAGE_MAP } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { useCurrency, CURRENCY_OPTIONS } from '../context/CurrencyContext';
 import { onTabBarScroll, TAB_BAR_INSET } from '../utils/tabBarAnim';
@@ -32,7 +33,12 @@ export default function CartScreen({ navigation }) {
       const val = parseFloat(String(item.frete || '').replace(',', '.'));
       return isNaN(val) || val < 0 ? 0 : val;
     }
-    return total >= 299 ? 0 : 19.90;
+    // Backend: usa frete enriquecido pelo api.js
+    if (item.frete !== undefined && item.frete !== null) {
+      const val = parseFloat(String(item.frete));
+      return isNaN(val) ? 19.90 : val;
+    }
+    return 19.90;
   }
 
   const freteCusto = entregaTipo === 'frete'
@@ -54,10 +60,14 @@ export default function CartScreen({ navigation }) {
 
   function renderItem({ item }) {
     const priceBRL = item.convertedPrice ?? item.price ?? 0;
+    // Usa o mapa como fonte autoritativa para evitar URLs antigas no carrinho
+    const foto = PRODUCT_IMAGE_MAP[item.description] || item.fotos?.[0] || null;
     return (
       <View style={s.item}>
         <View style={s.thumb}>
-          <Ionicons name={item.isLocal ? 'storefront-outline' : 'cube-outline'} size={22} color="#fff" />
+          {foto
+            ? <Image source={{ uri: foto }} style={StyleSheet.absoluteFill} resizeMode="contain" />
+            : <Ionicons name={item.isLocal ? 'storefront-outline' : 'cube-outline'} size={22} color="#fff" />}
         </View>
         <View style={s.itemInfo}>
           <Text style={s.itemName} numberOfLines={1}>{item.description || item.nome}</Text>
@@ -194,7 +204,7 @@ function makeStyles(colors) {
     toggleTextActive: { color: colors.primaryText },
     list: { paddingHorizontal: 16, paddingBottom: 16 },
     item: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border, gap: 14 },
-    thumb: { width: 56, height: 56, borderRadius: 12, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+    thumb: { width: 56, height: 56, borderRadius: 12, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
     itemInfo: { flex: 1 },
     itemName: { fontSize: 14, fontWeight: '700', color: colors.text },
     itemPrice: { fontSize: 15, fontWeight: '800', color: colors.text, marginTop: 3 },

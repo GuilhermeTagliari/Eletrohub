@@ -120,6 +120,17 @@ export default function HomeScreen({ navigation }) {
     ).slice(0, 6);
   }, [favorites, todos]);
 
+  const categoriasDisponiveis = useMemo(() => {
+    const cats = [...new Set(todos.map(p => p.categoria).filter(Boolean))].sort();
+    return ['Todos', ...cats];
+  }, [todos]);
+
+  useEffect(() => {
+    if (categoriaSelecionada !== 'Todos' && !categoriasDisponiveis.includes(categoriaSelecionada)) {
+      setCategoriaSelecionada('Todos');
+    }
+  }, [categoriasDisponiveis]);
+
   const primeiroNome = user?.name?.split(' ')[0] || 'usuário';
   const s = makeStyles(colors);
 
@@ -150,11 +161,17 @@ export default function HomeScreen({ navigation }) {
           <Text style={s.bannerTitle}>Melhores{'\n'}ofertas do dia</Text>
           <TouchableOpacity style={s.bannerBtn} onPress={() => navigation.navigate('Offers')}>
             <Text style={s.bannerBtnText}>Ver tudo</Text>
-            <Ionicons name="arrow-forward" size={14} color={isDark ? '#fff' : '#000'} />
+            <Ionicons name="arrow-forward" size={14} color="#1a1a1a" />
           </TouchableOpacity>
         </View>
         <View style={s.bannerDecor}>
-          <Ionicons name="home-outline" size={64} color={isDark ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)'} />
+          <View style={{ width: 88, height: 108, borderRadius: 14, overflow: 'hidden' }}>
+            <Image
+              source={{ uri: 'https://images.unsplash.com/photo-1710023038502-ba80a70a9f53?w=220&h=280&fit=crop&q=80' }}
+              style={{ width: '100%', height: '100%' }}
+              resizeMode="cover"
+            />
+          </View>
         </View>
       </View>
 
@@ -163,8 +180,10 @@ export default function HomeScreen({ navigation }) {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={s.filtros}
+        contentInset={{ right: 20 }}
+        style={s.filtrosScroll}
       >
-        {CATEGORIAS_FILTRO.map((cat, idx) => {
+        {categoriasDisponiveis.map((cat) => {
           const ativo = categoriaSelecionada === cat;
           return (
             <TouchableOpacity
@@ -177,6 +196,7 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           );
         })}
+        <View style={{ width: 20 }} />
       </ScrollView>
 
       {/* Contador */}
@@ -271,8 +291,10 @@ export default function HomeScreen({ navigation }) {
                       const p = item.convertedPrice ?? item.price ?? 0;
                       return (
                         <TouchableOpacity key={String(item.id)} style={s.miniCard} onPress={() => abrirProduto(item)} activeOpacity={0.8}>
-                          <View style={[s.miniImg, { backgroundColor: item.brand === 'Apple' ? '#1c1c1e' : '#2c7be5' }]}>
-                            <Ionicons name={item.isLocal ? 'storefront-outline' : 'cube-outline'} size={20} color="rgba(255,255,255,0.7)" />
+                          <View style={[s.miniImg, { backgroundColor: '#333' }]}>
+                            {item.fotos?.[0]
+                              ? <Image source={{ uri: item.fotos[0] }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                              : <Ionicons name={item.isLocal ? 'storefront-outline' : 'cube-outline'} size={20} color="rgba(255,255,255,0.7)" />}
                           </View>
                           <Text style={s.miniName} numberOfLines={2}>{item.description || item.nome}</Text>
                           <Text style={s.miniPrice}>{p > 0 ? formatBRL(p) : '—'}</Text>
@@ -338,27 +360,30 @@ function makeStyles(colors) {
       backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center',
     },
     banner: {
-      marginHorizontal: 16, marginBottom: 14, backgroundColor: colors.primary,
+      marginHorizontal: 16, marginBottom: 14, backgroundColor: '#1a1a1a',
       borderRadius: 20, padding: 22, flexDirection: 'row', overflow: 'hidden', height: 130,
     },
     bannerContent: { flex: 1, justifyContent: 'space-between' },
-    bannerTag: { fontSize: 10, color: colors.primaryText + '99', fontWeight: '700', letterSpacing: 1.5 },
-    bannerTitle: { fontSize: 20, fontWeight: '800', color: colors.primaryText, lineHeight: 26 },
+    bannerTag: { fontSize: 10, color: 'rgba(255,255,255,0.55)', fontWeight: '700', letterSpacing: 1.5 },
+    bannerTitle: { fontSize: 20, fontWeight: '800', color: '#ffffff', lineHeight: 26 },
     bannerBtn: {
       flexDirection: 'row', alignItems: 'center', gap: 4,
-      backgroundColor: colors.primaryText, alignSelf: 'flex-start',
+      backgroundColor: '#ffffff', alignSelf: 'flex-start',
       paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20,
     },
-    bannerBtnText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+    bannerBtnText: { fontSize: 12, fontWeight: '700', color: '#1a1a1a' },
     bannerDecor: { position: 'absolute', right: 16, top: 0, bottom: 0, justifyContent: 'center' },
+    filtrosScroll: {
+      height: 56,
+    },
     filtros: {
       flexDirection: 'row', alignItems: 'center',
-      paddingLeft: 16, paddingRight: 8, paddingBottom: 12, paddingTop: 4,
+      paddingLeft: 16, paddingRight: 0, paddingBottom: 10, paddingTop: 10,
     },
     filtroBtn: {
-      height: 34,
+      height: 36,
       paddingHorizontal: 16,
-      borderRadius: 17,
+      borderRadius: 18,
       borderWidth: 1.5,
       borderColor: colors.borderStrong,
       backgroundColor: colors.surface,

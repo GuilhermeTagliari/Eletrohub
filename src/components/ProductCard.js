@@ -44,9 +44,9 @@ export default function ProductCard({ product, onPress }) {
       onPress={onPress}
       activeOpacity={0.9}
     >
-      <View style={[styles.image, { backgroundColor: bgColor }]}>
+      <View style={[styles.image, { backgroundColor: foto ? '#f0f0f0' : bgColor }]}>
         {foto ? (
-          <Image source={{ uri: foto }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <Image source={{ uri: foto }} style={StyleSheet.absoluteFill} resizeMode="contain" />
         ) : (
           <Ionicons name="cube-outline" size={36} color="rgba(255,255,255,0.7)" />
         )}

@@ -20,10 +20,10 @@ function computeStatusIndex(order) {
 }
 
 const STATUSES = [
-  { key: 'confirmado', label: 'Confirmado', icon: 'checkmark-circle', color: '#2ed573' },
-  { key: 'separando',  label: 'Separando',  icon: 'cube',             color: '#ffa502' },
-  { key: 'enviado',    label: 'Enviado',     icon: 'car',              color: '#2c7be5' },
-  { key: 'entregue',   label: 'Entregue',    icon: 'home',             color: '#7bed9f' },
+  { key: 'confirmado', label: 'Compra confirmada', desc: 'Processamos sua compra.',                        icon: 'checkmark-circle', color: '#2ed573' },
+  { key: 'separando',  label: 'Em preparação',      desc: 'O vendedor está preparando sua compra.',        icon: 'cube',             color: '#ffa502' },
+  { key: 'enviado',    label: 'A caminho',           desc: 'O vendedor despachou sua compra.',              icon: 'car',              color: '#2c7be5' },
+  { key: 'entregue',   label: 'Entregue',            desc: 'Produto entregue ao destinatário.',             icon: 'home',             color: '#7bed9f' },
 ];
 
 const BRAND_COLORS = {
@@ -100,13 +100,26 @@ export default function MyOrdersScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Timeline expandida */}
+        {/* Timeline expandida — estilo Mercado Livre */}
         {isExpanded && (
           <View style={s.timeline}>
             {STATUSES.map((st, idx) => {
               const done = idx <= statusIdx;
               const isActive = idx === statusIdx;
               const isLast = idx === STATUSES.length - 1;
+              const base = new Date(item.createdAt || Date.now());
+              const offsets = [0, 48, 72, 120];
+              const stDate = new Date(base.getTime() + offsets[idx] * 3600000);
+              const fmtDt = (d) => d.toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).replace('.', '');
+
+              // Sub-eventos para "A caminho"
+              const hub1 = HUBS[item.id % HUBS.length];
+              const hub2 = HUBS[(item.id + 1) % HUBS.length];
+              const subEvents = (idx === 2 && done) ? [
+                { text: `Saiu do centro de distribuição de ${hub1} e está em trânsito.`, dt: new Date(base.getTime() + 78 * 3600000) },
+                { text: `Entrou no centro de distribuição de ${hub2}`, dt: new Date(base.getTime() + 95 * 3600000) },
+              ] : [];
+
               return (
                 <TouchableOpacity
                   key={st.key}
@@ -115,25 +128,24 @@ export default function MyOrdersScreen({ navigation }) {
                   activeOpacity={0.7}
                 >
                   <View style={s.timelineLeft}>
-                    <View style={[s.timelineDot, done && { borderColor: st.color, backgroundColor: done ? st.color + '22' : 'transparent' }]}>
-                      {done && <Ionicons name={st.icon} size={12} color={st.color} />}
+                    <View style={[s.timelineDot, done && { borderColor: st.color, backgroundColor: st.color + '22' }]}>
+                      {done && <Ionicons name={isActive && idx === 2 ? 'car' : 'checkmark'} size={12} color={st.color} />}
                     </View>
-                    {!isLast && <View style={[s.timelineLine, done && s.timelineLineDone]} />}
+                    {!isLast && <View style={[s.timelineLine, done && { backgroundColor: st.color }]} />}
                   </View>
                   <View style={s.timelineContent}>
-                    <Text style={[s.timelineLabel, done && { color: colors.text, fontWeight: '700' }]}>
+                    <Text style={[s.timelineLabel, done && { color: colors.text, fontWeight: '700' }, !done && { color: colors.textMuted }]}>
                       {st.label}
-                      {isActive && <Text style={{ color: st.color, fontSize: 11 }}> ● atual</Text>}
                     </Text>
-                    {isActive && item.deliveryType === 'Frete' && item.daysToArrive > 0 && (
-                      <Text style={s.timelineSub}>Previsão: {item.daysToArrive} dia{item.daysToArrive !== 1 ? 's' : ''} úteis</Text>
-                    )}
-                    {isActive && item.deliveryType === 'Local' && (
-                      <Text style={s.timelineSub}>Retirada local</Text>
-                    )}
-                    {!isActive && (
-                      <Text style={s.timelineHint}>Toque para definir</Text>
-                    )}
+                    {done && <Text style={s.timelineDesc}>{st.desc}</Text>}
+                    {done && <Text style={s.timelineDt}>{fmtDt(stDate)}</Text>}
+                    {subEvents.map((ev, i) => (
+                      <View key={i} style={{ marginTop: 10 }}>
+                        <Text style={s.timelineSubText}>{ev.text}</Text>
+                        <Text style={s.timelineDt}>{fmtDt(ev.dt)}</Text>
+                      </View>
+                    ))}
+                    {!done && <Text style={s.timelineHint}>Toque para avançar</Text>}
                   </View>
                 </TouchableOpacity>
               );
@@ -354,6 +366,9 @@ function makeStyles(colors) {
     timelineLineDone: { backgroundColor: colors.success },
     timelineContent: { flex: 1, paddingBottom: 16 },
     timelineLabel: { fontSize: 14, color: colors.textMuted },
+    timelineDesc: { fontSize: 13, color: colors.textSecondary, marginTop: 3, lineHeight: 18 },
+    timelineDt: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+    timelineSubText: { fontSize: 12, color: colors.textSecondary, lineHeight: 17 },
     timelineSub: { fontSize: 12, color: colors.info, marginTop: 2 },
     timelineHint: { fontSize: 11, color: colors.textMuted, marginTop: 1 },
     deliveryRow: {

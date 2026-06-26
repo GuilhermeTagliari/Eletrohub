@@ -1,6 +1,6 @@
 ﻿import React, { useMemo, useState, useEffect } from 'react';
 import { formatBRL } from '../utils/formatters';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -60,8 +60,11 @@ export default function OffersScreen({ navigation }) {
       .map(p => ({
         id: String(p.id),
         description: p.description,
+        brand: p.brand,
         categoria: p.categoria || p.brand || 'Eletrônico',
+        fotos: p.fotos || [],
         price: p.convertedPrice,
+        convertedPrice: p.convertedPrice,
         precoOriginal: null,
         desconto: 0,
         isLocal: false,
@@ -78,9 +81,9 @@ export default function OffersScreen({ navigation }) {
           product: {
             id: item.id,
             description: item.description,
-            brand: item.categoria,
+            brand: item.brand || item.categoria,
             categoria: item.categoria,
-            fotos: [],
+            fotos: item.fotos || [],
             price: item.price,
             convertedPrice: item.price,
             precoOriginal: item.precoOriginal,
@@ -90,11 +93,19 @@ export default function OffersScreen({ navigation }) {
         activeOpacity={0.85}
       >
         <View style={s.imgPlaceholder}>
-          <Ionicons
-            name={item.isLocal ? 'storefront-outline' : 'cube-outline'}
-            size={32}
-            color="rgba(255,255,255,0.5)"
-          />
+          {item.fotos && item.fotos[0] ? (
+            <Image
+              source={{ uri: item.fotos[0] }}
+              style={StyleSheet.absoluteFill}
+              resizeMode="cover"
+            />
+          ) : (
+            <Ionicons
+              name={item.isLocal ? 'storefront-outline' : 'cube-outline'}
+              size={32}
+              color="rgba(255,255,255,0.5)"
+            />
+          )}
           {item.desconto > 0 && (
             <View style={s.badge}>
               <Text style={s.badgeText}>-{item.desconto}%</Text>
