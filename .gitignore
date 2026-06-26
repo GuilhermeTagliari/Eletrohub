@@ -1,0 +1,38 @@
+# Dependências
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Sistema
+.DS_Store
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+
+# Obsidian (notas pessoais do projeto)
+Eletrohub/
+
+# Documentação / relatório (entregue separadamente)
+*.md
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.bat
+
+# Backend (repositório separado)
+microservices-java/
