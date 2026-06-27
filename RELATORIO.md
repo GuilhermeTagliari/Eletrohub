@@ -19,14 +19,14 @@
 
 ## 3. Integrantes do Grupo
 
-| Nome | RA | Papel |
-|---|---|---|
-| Guilherme Tagliari | 1134870 | Frontend |
-| Arthur | 1137711 | Backend |
-| Lorenzo | 1134869 | Backend |
-| Naubert | 1138130 | UI/UX (Figma) |
-| Léo | [RA] | Frontend |
-| JR | 1134269 | Integração Frontend/Backend |
+| Nome | RA | E-mail | Papel |
+|---|---|---|---|
+| Guilherme Tagliari | 1134870 | 1134870@atitus.edu.br | Frontend |
+| Arthur | 1137711 | 1137711@atitus.edu.br | Backend |
+| Lorenzo | 1134869 | 1134869@atitus.edu.br | Backend |
+| Naubert | 1138130 | 1138130@atitus.edu.br | UI/UX (Figma) |
+| Léo | [RA] | [RA]@atitus.edu.br | Frontend |
+| JR | 1134269 | 1134269@atitus.edu.br | Integração Frontend/Backend |
 
 ---
 
